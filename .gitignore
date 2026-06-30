@@ -1,0 +1,8 @@
+# Portage local distfiles cache, if you ever test-build from this dir
+distfiles/
+*.tar.gz
+*.tar.xz
+
+# Editor/OS cruft
+.DS_Store
+*.swp

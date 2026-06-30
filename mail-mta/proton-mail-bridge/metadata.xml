@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>shagasresthaa@protonmail.com</email>
+		<name>Sresthaa Shaga</name>
+	</maintainer>
+	<longdescription>
+		Proton Mail Bridge daemon. Added to this overlay because the official Gentoo tree was several versions behind upstream at the time.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">ProtonMail/proton-bridge</remote-id>
+	</upstream>
+</pkgmetadata>
