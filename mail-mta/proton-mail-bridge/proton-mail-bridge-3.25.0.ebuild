@@ -1,5 +1,10 @@
 # Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
+#
+# Adapted for this overlay by Sresthaa Shaga:
+#   - Bumped to 3.25.0 (official Gentoo tree was at 3.21.2)
+#   - Added openrc/systemd USE flags with added OpenRC user service
+#   - Vendor tarball re-hosted as a GitHub release on this overlay
 
 EAPI=8
 
@@ -10,14 +15,18 @@ MY_P="${MY_PN}-${PV}"
 
 DESCRIPTION="Serves Proton Mail to IMAP/SMTP clients"
 HOMEPAGE="https://proton.me/mail/bridge https://github.com/ProtonMail/proton-bridge/"
+#SRC_URI="https://github.com/ProtonMail/${MY_PN}/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
+#	https://dev.gentoo.org/~expeditioneer/distfiles/${CATEGORY}/${PN}/${P}-vendor.tar.xz"
 SRC_URI="https://github.com/ProtonMail/${MY_PN}/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
-	https://dev.gentoo.org/~expeditioneer/distfiles/${CATEGORY}/${PN}/${P}-vendor.tar.xz"
+	https://github.com/Shagasresthaa/personal-ebuild-repository/releases/download/${P}/${P}-vendor.tar.xz"
+
 S="${WORKDIR}"/${MY_P}
 
 LICENSE="GPL-3+ Apache-2.0 BSD BSD-2 ISC LGPL-3+ MIT MPL-2.0 Unlicense"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE="gui"
+IUSE="gui openrc systemd"
+REQUIRED_USE="^^ ( openrc systemd )"
 
 # Quite a few tests require Internet access
 PROPERTIES="test_network"
@@ -37,6 +46,9 @@ RDEPEND="
 	)
 "
 DEPEND="${RDEPEND}"
+BDEPEND="
+	>=dev-lang/go-1.26.1
+"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-3.15.1-gui_gentoo.patch
@@ -115,7 +127,28 @@ src_install() {
 		newmenu {dist/${MY_PN},${PN}}.desktop
 	fi
 
-	systemd_newuserunit "${FILESDIR}"/${PN}.service-r1 ${PN}.service
-
+	if use systemd; then
+		systemd_newuserunit "${FILESDIR}"/${PN}.service-r1 ${PN}.service
+	elif use openrc; then
+		insinto /etc/user/init.d
+		newins "${FILESDIR}"/proton-mail-bridge.initd ${PN}
+		fperms +x /etc/user/init.d/${PN}
+		insinto /etc/user/conf.d
+		newins "${FILESDIR}"/proton-mail-bridge.confd ${PN}
+	fi
 	einstalldocs
+}
+
+pkg_postinst() {
+	if use openrc; then
+		elog "proton-mail-bridge installed as an OpenRC user service."
+		elog ""
+		elog "Enable: rc-update --user add ${PN}"
+		elog "Start:  rc-service --user ${PN} start"
+		elog ""
+		elog "Requires OpenRC 0.60+ and XDG_RUNTIME_DIR set at login."
+		elog ""
+		elog "Extra CLI args can be set via PROTON_BRIDGE_EXTRA_ARGS in"
+		elog "/etc/user/conf.d/${PN}."
+	fi
 }

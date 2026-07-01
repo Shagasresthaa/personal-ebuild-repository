@@ -1,0 +1,2 @@
+# Extra command-line arguments passed to proton-mail-bridge.
+PROTON_BRIDGE_EXTRA_ARGS=""

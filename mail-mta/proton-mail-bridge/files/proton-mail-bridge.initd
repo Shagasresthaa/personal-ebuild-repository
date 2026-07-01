@@ -1,0 +1,23 @@
+#!/sbin/openrc-run
+#
+# OpenRC user service for proton-mail-bridge. Runs within your login
+# session via OpenRC's user-service support (0.60+).
+#
+# Known limitations:
+# - Provides crash recovery within an active session, not unattended
+#   boot automation.
+# - Does not replicate the systemd unit's kernel-level sandboxing
+#   (ProtectSystem, PrivateTmp, seccomp). No OpenRC equivalent exists;
+#   would require a separate sandboxing tool (firejail, bubblewrap).
+
+name="proton-mail-bridge"
+description="Proton Mail Bridge IMAP/SMTP daemon (per-user session service)"
+
+supervisor="supervise-daemon"
+command="/usr/bin/proton-mail-bridge"
+command_args="--noninteractive ${PROTON_BRIDGE_EXTRA_ARGS}"
+pidfile="${XDG_RUNTIME_DIR:-/tmp}/proton-mail-bridge.pid"
+
+respawn_max=5
+respawn_period=60
+

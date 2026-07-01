@@ -12,7 +12,7 @@ Please note that the versions below are as of time of writing and may have moved
 
 | Package                      | Version | Gentoo Tree Version | Notes |
 |-------------------------------|---------|------------------------|-------|
-| mail-mta/proton-mail-bridge   | 3.25.0  | 3.21.2                  | Wrote this because the official tree was several releases behind |
+| mail-mta/proton-mail-bridge   | 3.25.0  | 3.21.2                  | Adds an OpenRC user service as an alternative to the official ebuild's systemd-only unit. Choose via `USE="openrc"` or `USE="systemd"`. Requires a paid Proton plan; Bridge doesn't work on the free tier. |
 
 ## Adding this repo
 
